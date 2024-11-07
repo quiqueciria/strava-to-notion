@@ -1,0 +1,31 @@
+name: Sync Strava with Notion
+
+on:
+  schedule:
+    - cron: "0 * * * *" # Esto ejecuta la acción cada hora. Ajusta la cronograma según tus necesidades.
+  workflow_dispatch: # Permite ejecutar manualmente el workflow desde la interfaz de GitHub.
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest # Usa un contenedor de Ubuntu para ejecutar el código
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 # Verifica el código de tu repositorio
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16" # Usa la versión de Node.js que necesites
+
+      - name: Install dependencies
+        run: |
+          npm install  # Instala las dependencias de tu proyecto
+
+      - name: Run Strava to Notion Sync Script
+        env:
+          STRAVA_ACCESS_TOKEN: ${{ secrets.STRAVA_ACCESS_TOKEN }} # Guarda el token de acceso de Strava como secreto
+          NOTION_INTEGRATION_TOKEN: ${{ secrets.NOTION_INTEGRATION_TOKEN }} # Guarda el token de Notion como secreto
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }} # Guarda el ID de la base de datos como secreto
+        run: |
+          node sync-strava.js  # Asegúrate de que tu script de sincronización se llame 'sync-strava.js'
