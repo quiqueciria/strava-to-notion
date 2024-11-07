@@ -2,8 +2,8 @@ name: Sync Strava with Notion
 
 on:
   schedule:
-    - cron: "0 * * * *" # Esto ejecuta la acción cada hora. Ajusta la cronograma según tus necesidades.
-  workflow_dispatch: # Permite ejecutar manualmente el workflow desde la interfaz de GitHub.
+    - cron: "0 * * * *" # Ejecuta la acción cada hora
+  workflow_dispatch: # Permite ejecutar manualmente desde la interfaz de GitHub
 
 jobs:
   sync:
@@ -11,12 +11,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2 # Verifica el código de tu repositorio
+        uses: actions/checkout@v3 # Actualiza a la versión más reciente de checkout (v3)
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3 # Actualiza a la versión más reciente de setup-node (v3)
         with:
-          node-version: "16" # Usa la versión de Node.js que necesites
+          node-version: "16" # Usa Node.js 16
 
       - name: Install dependencies
         run: |
@@ -24,8 +24,8 @@ jobs:
 
       - name: Run Strava to Notion Sync Script
         env:
-          STRAVA_ACCESS_TOKEN: ${{ secrets.STRAVA_ACCESS_TOKEN }} # Guarda el token de acceso de Strava como secreto
-          NOTION_INTEGRATION_TOKEN: ${{ secrets.NOTION_INTEGRATION_TOKEN }} # Guarda el token de Notion como secreto
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }} # Guarda el ID de la base de datos como secreto
+          STRAVA_ACCESS_TOKEN: ${{ secrets.STRAVA_ACCESS_TOKEN }} # Accede al secreto de Strava
+          NOTION_INTEGRATION_TOKEN: ${{ secrets.NOTION_INTEGRATION_TOKEN }} # Accede al secreto de Notion
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }} # Accede al ID de la base de datos
         run: |
-          node sync-strava.js  # Asegúrate de que tu script de sincronización se llame 'sync-strava.js'
+          node sync-strava.js  # Ejecuta el script que sincroniza Strava con Notion
