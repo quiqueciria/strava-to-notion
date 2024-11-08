@@ -2,7 +2,7 @@ name: Sync Strava with Notion
 
 on:
   schedule:
-    - cron: "0 * * * *" # Ejecuta la acción cada hora
+    - cron: "0 */6 * * *" # Ejecuta la acción cada hora
   workflow_dispatch: # Permite ejecutar manualmente desde la interfaz de GitHub
 
 jobs:
