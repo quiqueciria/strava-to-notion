@@ -1,18 +1,16 @@
-const dotenv = require("dotenv");
-dotenv.config();
-
+require("dotenv").config(); // Carga las variables de entorno desde .env
 const axios = require("axios");
 const { Client } = require("@notionhq/client");
 
 // Configuración de Strava
-let STRAVA_ACCESS_TOKEN = process.env.STRAVA_ACCESS_TOKEN; // Usar variables de entorno para mayor seguridad
+let STRAVA_ACCESS_TOKEN = process.env.STRAVA_ACCESS_TOKEN;
 const STRAVA_REFRESH_TOKEN = process.env.STRAVA_REFRESH_TOKEN;
 const STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID;
 const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
 const stravaUrl = "https://www.strava.com/api/v3/athlete/activities";
 
 // Configuración de Notion
-const notion = new Client({ auth: process.env.NOTION_ACCESS_TOKEN });
+const notion = new Client({ auth: process.env.NOTION_INTEGRATION_TOKEN });
 const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
 
 // Función para actualizar el token de Strava
@@ -31,11 +29,12 @@ async function refreshAccessToken() {
       }
     );
 
-    // Actualizar los tokens
+    // Actualizar el token de acceso
     STRAVA_ACCESS_TOKEN = response.data.access_token;
     console.log("Nuevo token de acceso:", STRAVA_ACCESS_TOKEN);
 
-    // Aquí puedes agregar código para almacenar el nuevo token si es necesario
+    // Aquí podrías guardar el nuevo token de acceso en un lugar seguro si fuera necesario
+
     return STRAVA_ACCESS_TOKEN;
   } catch (error) {
     console.error("Error al renovar el token de acceso:", error);
@@ -51,10 +50,10 @@ async function getActivities() {
     });
 
     const activities = response.data;
-    activities.forEach(async (activity) => {
+    for (const activity of activities) {
       const distanceInKilometers = parseFloat(
         (activity.distance / 1000).toFixed(2)
-      );
+      ); // Convierte a kilómetros y redondea a 2 decimales
 
       // Buscar si la actividad ya existe en Notion usando el ID de Strava
       const existingPage = await notion.databases.query({
@@ -68,7 +67,7 @@ async function getActivities() {
       });
 
       if (existingPage.results.length === 0) {
-        // Crear nueva página en Notion
+        // Si la actividad no existe, crear una nueva página
         await notion.pages.create({
           parent: { database_id: NOTION_DATABASE_ID },
           properties: {
@@ -100,8 +99,11 @@ async function getActivities() {
             },
           },
         });
+        console.log(`Actividad '${activity.name}' añadida a Notion.`);
+      } else {
+        console.log(`Actividad '${activity.name}' ya existe en Notion.`);
       }
-    });
+    }
   } catch (error) {
     if (error.response && error.response.status === 401) {
       // Si el token expiró, renovar y volver a intentar
