@@ -1,41 +1,37 @@
-name: Sync Strava Activities to Notion
+name: Sync Strava Activities
 
 on:
   schedule:
-    # Ejecuta el flujo de trabajo automáticamente todos los días a las 3:00 AM
-    - cron: "0 3 * * *"
-  workflow_dispatch:
-    # Permite ejecutar manualmente el flujo de trabajo desde la interfaz de GitHub
+    # Ejecutar todos los días a las 2:00 AM UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Permite ejecutar el workflow manualmente
 
 jobs:
-  sync-strava:
+  run-sync:
     runs-on: ubuntu-latest
 
     steps:
-      # Verifica el repositorio
-      - name: Check out the repository
+      # Clona el repositorio
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       # Configura Node.js
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18" # Puedes ajustar la versión de Node.js según tus necesidades
+          node-version: "18" # Usa la versión de Node.js que prefieras
 
-      # Instala las dependencias
+      # Instala las dependencias del proyecto
       - name: Install dependencies
         run: npm install
 
-      # Configura las variables de entorno desde los secretos de GitHub
-      - name: Set environment variables
-        run: |
-          echo "STRAVA_ACCESS_TOKEN=${{ secrets.STRAVA_ACCESS_TOKEN }}" >> $GITHUB_ENV
-          echo "STRAVA_REFRESH_TOKEN=${{ secrets.STRAVA_REFRESH_TOKEN }}" >> $GITHUB_ENV
-          echo "STRAVA_CLIENT_ID=${{ secrets.STRAVA_CLIENT_ID }}" >> $GITHUB_ENV
-          echo "STRAVA_CLIENT_SECRET=${{ secrets.STRAVA_CLIENT_SECRET }}" >> $GITHUB_ENV
-          echo "NOTION_INTEGRATION_TOKEN=${{ secrets.NOTION_INTEGRATION_TOKEN }}" >> $GITHUB_ENV
-          echo "NOTION_DATABASE_ID=${{ secrets.NOTION_DATABASE_ID }}" >> $GITHUB_ENV
-
       # Ejecuta el script de sincronización
-      - name: Run Strava to Notion Sync
+      - name: Run sync script
         run: node sync-strava.js
+        env:
+          STRAVA_ACCESS_TOKEN: ${{ secrets.STRAVA_ACCESS_TOKEN }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          NOTION_INTEGRATION_TOKEN: ${{ secrets.NOTION_INTEGRATION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
