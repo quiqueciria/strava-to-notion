@@ -1,74 +1,43 @@
-const dotenv = require("dotenv");
-dotenv.config();
-
 const axios = require("axios");
 const { Client } = require("@notionhq/client");
 
 // Configuración de Strava
-let STRAVA_ACCESS_TOKEN = process.env.STRAVA_ACCESS_TOKEN; // Usar variables de entorno para mayor seguridad
-const STRAVA_REFRESH_TOKEN = process.env.STRAVA_REFRESH_TOKEN;
-const STRAVA_CLIENT_ID = process.env.STRAVA_CLIENT_ID;
-const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
+const STRAVA_ACCESS_TOKEN = "a6772431152d9a0c798c62894e6dba9e17c36934";
 const stravaUrl = "https://www.strava.com/api/v3/athlete/activities";
 
 // Configuración de Notion
-const notion = new Client({ auth: process.env.NOTION_ACCESS_TOKEN });
-const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
+const NOTION_ACCESS_TOKEN =
+  "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";
+const NOTION_DATABASE_ID = "137ad089a85b802b95c1cbc7b14f1009";
+const notion = new Client({ auth: NOTION_ACCESS_TOKEN });
 
-// Función para actualizar el token de Strava
-async function refreshAccessToken() {
-  try {
-    const response = await axios.post(
-      "https://www.strava.com/oauth/token",
-      null,
-      {
-        params: {
-          client_id: STRAVA_CLIENT_ID,
-          client_secret: STRAVA_CLIENT_SECRET,
-          grant_type: "refresh_token",
-          refresh_token: STRAVA_REFRESH_TOKEN,
-        },
-      }
-    );
-
-    // Actualizar los tokens
-    STRAVA_ACCESS_TOKEN = response.data.access_token;
-    console.log("Nuevo token de acceso:", STRAVA_ACCESS_TOKEN);
-
-    // Aquí puedes agregar código para almacenar el nuevo token si es necesario
-    return STRAVA_ACCESS_TOKEN;
-  } catch (error) {
-    console.error("Error al renovar el token de acceso:", error);
-    throw error;
-  }
-}
-
-// Función para obtener actividades de Strava con manejo de errores de autenticación
-async function getActivities() {
-  try {
-    const response = await axios.get(stravaUrl, {
-      headers: { Authorization: `Bearer ${STRAVA_ACCESS_TOKEN}` },
-    });
-
+// Obtener actividades de Strava
+axios
+  .get(stravaUrl, {
+    headers: { Authorization: `Bearer ${STRAVA_ACCESS_TOKEN}` },
+  })
+  .then((response) => {
     const activities = response.data;
     activities.forEach(async (activity) => {
+      // Suponiendo que activity.distance está en metros
       const distanceInKilometers = parseFloat(
         (activity.distance / 1000).toFixed(2)
-      );
+      ); // Convierte a número
 
       // Buscar si la actividad ya existe en Notion usando el ID de Strava
       const existingPage = await notion.databases.query({
         database_id: NOTION_DATABASE_ID,
         filter: {
-          property: "Strava ID",
+          property: "Strava ID", // Asegúrate de tener una columna en Notion para almacenar el ID de Strava
           rich_text: {
-            equals: activity.id.toString(),
+            equals: activity.id.toString(), // Compara con el ID de la actividad
           },
         },
       });
 
+      // Si no existe, crear una nueva página
       if (existingPage.results.length === 0) {
-        // Crear nueva página en Notion
+        // Si la actividad no está en la base de datos, la creamos
         await notion.pages.create({
           parent: { database_id: NOTION_DATABASE_ID },
           properties: {
@@ -90,6 +59,7 @@ async function getActivities() {
               },
             },
             "Strava ID": {
+              // Guarda el ID de Strava para futuras comparaciones
               rich_text: [
                 {
                   text: {
@@ -98,22 +68,12 @@ async function getActivities() {
                 },
               ],
             },
+            // Agrega más propiedades según tus necesidades
           },
         });
       }
     });
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      // Si el token expiró, renovar y volver a intentar
-      console.log("El token expiró, renovando...");
-      STRAVA_ACCESS_TOKEN = await refreshAccessToken();
-      // Reintentar la solicitud con el nuevo token
-      await getActivities();
-    } else {
-      console.error(`Error al obtener actividades de Strava: ${error}`);
-    }
-  }
-}
-
-// Ejecutar la función de sincronización
-getActivities();
+  })
+  .catch((error) => {
+    console.error(`Error al obtener actividades de Strava: ${error}`);
+  });
