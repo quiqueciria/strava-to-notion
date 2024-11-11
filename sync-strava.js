@@ -2,7 +2,7 @@ const axios = require("axios");
 const { Client } = require("@notionhq/client");
 
 // Configuración de Strava
-const STRAVA_ACCESS_TOKEN = "97ef35ac2dad3ceb4905f14fb4208cd9b07d0a28";
+const STRAVA_ACCESS_TOKEN = "46cf8be35bb6088e3cbb9605bdfad6fa28080d1d";
 const stravaUrl = "https://www.strava.com/api/v3/athlete/activities";
 
 // Configuración de Notion
