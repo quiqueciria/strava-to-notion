@@ -1,16 +1,4 @@
 require("dotenv").config(); // Carga las variables de entorno desde .env
-
-// Agrega estos registros de depuración para confirmar la presencia de las variables de entorno
-console.log("Client ID exists:", !!process.env.STRAVA_CLIENT_ID);
-console.log("Client Secret exists:", !!process.env.STRAVA_CLIENT_SECRET);
-console.log("Refresh Token exists:", !!process.env.STRAVA_REFRESH_TOKEN);
-console.log("Access Token exists:", !!process.env.STRAVA_ACCESS_TOKEN);
-console.log(
-  "Notion Integration Token exists:",
-  !!process.env.NOTION_INTEGRATION_TOKEN
-);
-console.log("Notion Database ID exists:", !!process.env.NOTION_DATABASE_ID);
-
 const axios = require("axios");
 const { Client } = require("@notionhq/client");
 
