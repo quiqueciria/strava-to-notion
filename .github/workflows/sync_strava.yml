@@ -2,31 +2,27 @@ name: Sync Strava with Notion
 
 on:
   schedule:
-    # Ejecutar todos los días a las 2:00 AM UTC
-    - cron: "0 2 * * *"
-  workflow_dispatch: # Permite ejecutar el workflow manualmente
+    - cron: "0 * * * *" # Ejecuta la acción cada hora
+  workflow_dispatch: # Permite ejecutar manualmente desde la interfaz de GitHub
 
 jobs:
-  run-sync:
-    runs-on: ubuntu-latest
+  sync:
+    runs-on: ubuntu-latest # Usa un contenedor de Ubuntu para ejecutar el código
 
     steps:
-      # Clona el repositorio
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3 # Actualiza a la versión más reciente de checkout (v3)
 
-      # Configura Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3 # Actualiza a la versión más reciente de setup-node (v3)
         with:
-          node-version: "16" # Usa la versión de Node.js que prefieras
+          node-version: "16" # Usa Node.js 16
 
-      # Instala las dependencias del proyecto
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install  # Instala las dependencias de tu proyecto
 
-      # Ejecuta el script de sincronización
-      - name: Run sync script
+      - name: Run Strava to Notion Sync Script
         env:
           STRAVA_ACCESS_TOKEN: ${{ secrets.STRAVA_ACCESS_TOKEN }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
@@ -35,4 +31,4 @@ jobs:
           NOTION_INTEGRATION_TOKEN: ${{ secrets.NOTION_INTEGRATION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
         run: |
-          node sync-strava.js
+          node sync-strava.js  # Ejecuta el script que sincroniza Strava con Notion
