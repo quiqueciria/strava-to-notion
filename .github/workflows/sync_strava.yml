@@ -1,4 +1,4 @@
-name: Sync Strava Activities
+name: Sync Strava with Notion
 
 on:
   schedule:
