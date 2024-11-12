@@ -6,12 +6,11 @@ on:
   workflow_dispatch: # Permite ejecutar manualmente desde la interfaz de GitHub
 
 jobs:
-  sync:
-    runs-on: ubuntu-latest # Usa un contenedor de Ubuntu para ejecutar el código
-
+  test-env:
+    runs-on: ubuntu-latest
     steps:
-      - name: Print environment variables
+      - name: Print test secret
         env:
-          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
         run: |
-          echo "Client ID exists: ${STRAVA_CLIENT_ID:0:3}"
+          echo "Test secret: ${TEST_SECRET}"
