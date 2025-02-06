@@ -48,7 +48,6 @@ async function getActivities() {
     const response = await axios.get(stravaUrl, {
       headers: { Authorization: `Bearer ${STRAVA_ACCESS_TOKEN}` },
     });
-
     const activities = response.data;
     for (const activity of activities) {
       // Convierte a kilómetros y redondea a 2 decimales
@@ -56,9 +55,10 @@ async function getActivities() {
         (activity.distance / 1000).toFixed(2)
       );
       // Convertir a Horas
-      const elapsedTimeInHours = parseFloat(
-        (activity.elapsed_time / 3600).toFixed(2)
-      );
+      const totalSeconds = elapsedTimeInHours;
+      const hours = Math.floor(totalSeconds / 3600); // 5400 / 3600 = 1 hora
+      const minutes = Math.floor((totalSeconds % 3600) / 60); // 0 minutos
+
       // Convertir a km/h
       const averageSpeedKmH = parseFloat(
         (activity.average_speed * 3.6).toFixed(2)
@@ -97,7 +97,7 @@ async function getActivities() {
               },
             },
             Elapsed: {
-              number: elapsedTimeInHours,
+              number: totalSeconds,
             },
             Media: {
               number: averageSpeedKmH,
