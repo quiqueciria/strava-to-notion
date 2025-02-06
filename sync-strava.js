@@ -58,6 +58,7 @@ async function getActivities() {
       const totalSeconds = elapsedTimeInHours;
       const hours = Math.floor(totalSeconds / 3600); // 5400 / 3600 = 1 hora
       const minutes = Math.floor((totalSeconds % 3600) / 60); // 0 minutos
+      const elapsedTimeFormatted = `${hours}h ${minutes}m`;
 
       // Convertir a km/h
       const averageSpeedKmH = parseFloat(
@@ -97,7 +98,7 @@ async function getActivities() {
               },
             },
             Elapsed: {
-              number: totalSeconds,
+              number: elapsedTimeFormatted,
             },
             Media: {
               number: averageSpeedKmH,
