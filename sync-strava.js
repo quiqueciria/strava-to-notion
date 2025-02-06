@@ -51,10 +51,14 @@ async function getActivities() {
 
     const activities = response.data;
     for (const activity of activities) {
+      // Convierte a kilómetros y redondea a 2 decimales
       const distanceInKilometers = parseFloat(
         (activity.distance / 1000).toFixed(2)
-      ); // Convierte a kilómetros y redondea a 2 decimales
-
+      );
+      // Convertir a Horas
+      const elapsedTimeInHours = parseFloat(
+        (activity.elapsed_time / 3600).toFixed(2)
+      );
       // Buscar si la actividad ya existe en Notion usando el ID de Strava
       const existingPage = await notion.databases.query({
         database_id: NOTION_DATABASE_ID,
@@ -87,6 +91,9 @@ async function getActivities() {
               date: {
                 start: activity.start_date_local,
               },
+            },
+            Elapsed: {
+              number: elapsedTimeInHours,
             },
             "Strava ID": {
               rich_text: [
