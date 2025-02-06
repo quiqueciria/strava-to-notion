@@ -61,7 +61,7 @@ async function getActivities() {
       );
       // Convertir a km/h
       const averageSpeedKmH = parseFloat(
-        (activity.average_speed * 1.60934).toFixed(2)
+        (activity.average_speed * 3.6).toFixed(2)
       );
       // Buscar si la actividad ya existe en Notion usando el ID de Strava
       const existingPage = await notion.databases.query({
