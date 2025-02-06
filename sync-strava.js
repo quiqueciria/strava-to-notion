@@ -95,6 +95,9 @@ async function getActivities() {
             Elapsed: {
               number: elapsedTimeInHours,
             },
+            Media: {
+              number: activity.average_speed,
+            },
             "Strava ID": {
               rich_text: [
                 {
