@@ -59,6 +59,10 @@ async function getActivities() {
       const elapsedTimeInHours = parseFloat(
         (activity.elapsed_time / 3600).toFixed(2)
       );
+      // Convertir a km/h
+      const averageSpeedKmH = parseFloat(
+        (activity.average_speed * 1.60934).toFixed(2)
+      );
       // Buscar si la actividad ya existe en Notion usando el ID de Strava
       const existingPage = await notion.databases.query({
         database_id: NOTION_DATABASE_ID,
@@ -96,7 +100,7 @@ async function getActivities() {
               number: elapsedTimeInHours,
             },
             Media: {
-              number: activity.average_speed,
+              number: averageSpeedKmH,
             },
             "Strava ID": {
               rich_text: [
