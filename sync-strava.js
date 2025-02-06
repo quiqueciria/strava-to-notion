@@ -55,7 +55,7 @@ async function getActivities() {
         (activity.distance / 1000).toFixed(2)
       );
       // Convertir a Horas
-      const totalSeconds = elapsedTimeInHours;
+      const totalSeconds = activity.elapsed_time;
       const hours = Math.floor(totalSeconds / 3600); // 5400 / 3600 = 1 hora
       const minutes = Math.floor((totalSeconds % 3600) / 60); // 0 minutos
       const elapsedTimeFormatted = `${hours}h ${minutes}m`;
