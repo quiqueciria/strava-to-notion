@@ -88,6 +88,9 @@ async function getActivities() {
                 start: activity.start_date_local,
               },
             },
+            Elapsed: {
+              number: elapsedTimeInHours,
+            },
             "Strava ID": {
               rich_text: [
                 {
