@@ -1,4 +1,3 @@
-require("dotenv").config(); // Carga las variables de entorno desde .env
 const axios = require("axios");
 const { Client } = require("@notionhq/client");
 
